@@ -1,0 +1,46 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    background-color: #666666;
+    color: #ffffff;
+}
+
+/* 未访问链接*/
+a:link {
+    color: #ffffff;
+}
+
+/* 已访问链接 */
+a:visited {
+    color: #ffffff;
+}
+
+/* 鼠标移动到链接上 */
+a:hover {
+    font-weight: bold;
+}
+
+/* 鼠标点击时 */
+a:active {
+    font-weight: bold;
+}
+
+/*table的内容样式*/
+.table-content {
+    word-wrap: break-word;
+    table-layout: fixed;
+}
+
+.table-content-hidden {
+    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -moz-text-overflow: ellipsis;
+    -webkit-text-overflow: ellipsis;
+}
+
+td {
+    width: 100px;
+}

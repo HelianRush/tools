@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fool.mapper.FoolUserMapper">
+
+    <resultMap id="BaseResultMap" type="com.fool.entity.FoolUser">
+        <id column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="account" property="account" jdbcType="VARCHAR"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="salt" property="salt" jdbcType="VARCHAR"/>
+        <result column="plaintext" property="plaintext" jdbcType="VARCHAR"/>
+        <result column="lock_status" property="lockStatus" jdbcType="BIT"/>
+        <result column="user_create_time" property="userCreateTime" jdbcType="TIMESTAMP"/>
+        <result column="user_last_login_time" property="userLastLoginTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="ManyResultMap" type="com.fool.entity.FoolUser">
+        <id column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="account" property="account" jdbcType="VARCHAR"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="salt" property="salt" jdbcType="VARCHAR"/>
+        <result column="plaintext" property="plaintext" jdbcType="VARCHAR"/>
+        <result column="lock_status" property="lockStatus" jdbcType="BIT"/>
+        <result column="user_create_time" property="userCreateTime" jdbcType="TIMESTAMP"/>
+        <result column="user_last_login_time" property="userLastLoginTime" jdbcType="TIMESTAMP"/>
+        <collection property="foolRole" ofType="com.fool.entity.FoolRole" javaType="java.util.ArrayList">
+            <id column="roleId" property="roleId" jdbcType="VARCHAR"/>
+            <result column="roleName" property="roleName" jdbcType="VARCHAR"/>
+            <result column="roleDescription" property="roleDescription" jdbcType="VARCHAR"/>
+            <collection property="foolPermission" ofType="com.fool.entity.FoolPermission" javaType="java.util.HashSet">
+                <id column="perId" property="perId" jdbcType="VARCHAR"/>
+                <result column="perName" property="perName" jdbcType="VARCHAR"/>
+                <result column="perDescription" property="perDescription" jdbcType="VARCHAR"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id AS userId,
+        account AS account,
+        username AS username,
+        password AS password,
+        salt AS salt,
+        plaintext AS plaintext,
+        lock_status AS lockStatus,
+        user_create_time AS userCreateTime,
+        user_last_login_time AS userLastLoginTime
+    </sql>
+
+    <sql id="ManyResultList">
+        fu.user_id AS userId,
+        fu.account AS account,
+        fu.username AS username,
+        fu.password AS password,
+        fu.salt AS salt,
+        fu.plaintext AS plaintext,
+        fu.lock_status AS lockStatus,
+        fu.user_create_time AS userCreateTime,
+        fu.user_last_login_time AS userLastLoginTime,
+        fr.role_id AS roleId,
+        fr.role_name AS roleName,
+        fr.role_description AS roleDescription,
+        fp.per_id AS perId,
+        fp.per_name AS perName,
+        fp.per_description AS perDescription
+    </sql>
+
+    <!-- ========== ========== ========== ========== ========== -->
+
+    <!-- 根据用户名查询 -->
+    <select id="QueryByUsername" resultType="com.fool.entity.FoolUser" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        fool_user
+        <where>
+            <if test="username != null ">
+                username = #{username,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据账号查询用户 结果唯一 -->
+    <select id="FindByUsername" resultType="com.fool.entity.FoolUser">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        fool_user
+        <where>
+            <if test="userId != null ">
+                user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="account != null ">
+                account = #{account,jdbcType=VARCHAR}
+            </if>
+            <if test="username != null ">
+                username = #{username,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据账号查询用户 - 依赖查询 -->
+    <select id="QueryByUsernameToMany" resultMap="ManyResultMap">
+        SELECT
+        <include refid="ManyResultList"/>
+        FROM
+        fool_user fu
+        LEFT JOIN fool_un_user_role fuur ON fuur.ur_userId = fu.user_id
+        LEFT JOIN fool_role fr ON fr.role_id = fuur.ur_roleId
+        LEFT JOIN fool_un_role_permission furp ON furp.rp_roleId = fr.role_id
+        LEFT JOIN fool_permission fp ON fp.per_id = furp.rp_permissionId
+        <where>
+            <if test="userId != null ">
+                user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="account != null ">
+                account = #{account,jdbcType=VARCHAR}
+            </if>
+            <if test="username != null ">
+                username = #{username,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryUserListForConfig" resultType="com.fool.entity.FoolUser">
+        SELECT
+        user_id AS userId,
+        username AS username
+        FROM
+        fool_user
+        WHERE
+        lock_status = 1
+    </select>
+
+    <!-- ========== ========== ========== ========== ========== -->
+    <!-- ========== ========== ========== ========== ========== -->
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from fool_user
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from fool_user
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.fool.entity.FoolUser">
+    insert into fool_user (user_id, account, username, 
+      password, salt, plaintext, 
+      lock_status, user_create_time, user_last_login_time
+      )
+    values (#{userId,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, #{plaintext,jdbcType=VARCHAR}, 
+      #{lockStatus,jdbcType=BIT}, #{userCreateTime,jdbcType=TIMESTAMP}, #{userLastLoginTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.fool.entity.FoolUser">
+        insert into fool_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="account != null">
+                account,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="salt != null">
+                salt,
+            </if>
+            <if test="plaintext != null">
+                plaintext,
+            </if>
+            <if test="lockStatus != null">
+                lock_status,
+            </if>
+            <if test="userCreateTime != null">
+                user_create_time,
+            </if>
+            <if test="userLastLoginTime != null">
+                user_last_login_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null">
+                #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="salt != null">
+                #{salt,jdbcType=VARCHAR},
+            </if>
+            <if test="plaintext != null">
+                #{plaintext,jdbcType=VARCHAR},
+            </if>
+            <if test="lockStatus != null">
+                #{lockStatus,jdbcType=BIT},
+            </if>
+            <if test="userCreateTime != null">
+                #{userCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userLastLoginTime != null">
+                #{userLastLoginTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fool.entity.FoolUser">
+        update fool_user
+        <set>
+            <if test="account != null">
+                account = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="salt != null">
+                salt = #{salt,jdbcType=VARCHAR},
+            </if>
+            <if test="plaintext != null">
+                plaintext = #{plaintext,jdbcType=VARCHAR},
+            </if>
+            <if test="lockStatus != null">
+                lock_status = #{lockStatus,jdbcType=BIT},
+            </if>
+            <if test="userCreateTime != null">
+                user_create_time = #{userCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userLastLoginTime != null">
+                user_last_login_time = #{userLastLoginTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fool.entity.FoolUser">
+    update fool_user
+    set account = #{account,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      salt = #{salt,jdbcType=VARCHAR},
+      plaintext = #{plaintext,jdbcType=VARCHAR},
+      lock_status = #{lockStatus,jdbcType=BIT},
+      user_create_time = #{userCreateTime,jdbcType=TIMESTAMP},
+      user_last_login_time = #{userLastLoginTime,jdbcType=TIMESTAMP}
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+</mapper>

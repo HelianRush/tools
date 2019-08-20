@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="x-ua-compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+    <!-- JQuery -->
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+
+    <!-- x-editable -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css"
+          rel="stylesheet"/>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+
+    <!-- Myself Javascript & CSS -->
+    <link href="../static/css/all.css" th:href="@{/css/all.css}" rel="stylesheet"/>
+
+    <title>导航管理</title>
+</head>
+<body>
+
+<div class="container-fluid" id="head">
+    <div class="text-left">
+        <h2>导航管理</h2>
+    </div>
+    <div class="row" id="navigation">
+        <div class="col-lg-3 col-md-3 text-left">
+            <a class="btn btn-link" href="#">后台管理</a>&nbsp;&gt;&nbsp;<a class="btn btn-link" href="#">导航管理</a>
+        </div>
+        <div class="col-lg-3 col-md-3 col-md-offset-6 text-right">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal">新增</button>
+        </div>
+    </div>
+</div>
+<div class="container-fluid" id="body">
+    <div class="text-center">
+        <h2>导航列表</h2>
+    </div>
+    <div id="table">
+        <table class="table table-bordered table-responsive table-content table-content-hidden">
+            <thead>
+            <tr>
+                <th>操作 | ToDo</th>
+                <th>键值 | KEY</th>
+                <!--<th>编号 | ID</th>-->
+                <th>序列 | SCORE</th>
+                <th>名称 | NAME</th>
+                <th>地址 | URL</th>
+                <th>级别 | LEVEL</th>
+                <th>父级 | PARENT</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="data:${list}">
+                <td>
+                    <button tyep="button" id="doRemove" class="btn btn-primary" th:id="${data.score}"
+                            th:onclick="'doRemove(this)'">删除
+                    </button>
+                </td>
+                <td th:text="${data.indexKey}">KEY</td>
+                <!--<td th:text="${data.indexID}">ID</td>-->
+                <td th:text="${data.score}">SCORE</td>
+                <td th:text="${data.name}">NAME</td>
+                <td th:text="${data.url}">URL</td>
+                <td th:text="${data.level}">LEVEL</td>
+                <td th:text="${data.parent}">PARENT</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 模态框 -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="addModalLabel">新增 导航栏</h4>
+            </div>
+
+            <div class="modal-body">
+                <form th:action="@{/MJICtl/add}" id="doAdd">
+                    <div class="form-group">
+                        <label for="indexKey" class="control-label"><span>&nbsp;*&nbsp;</span>键值 KEY：</label>
+                        <input type="text" class="form-control" name="indexKey" id="indexKey" placeholder="key ...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name" class="control-label"><span>&nbsp;*&nbsp;</span>名称 NAME：</label>
+                        <input type="text" class="form-control" name="name" id="name" placeholder="导航名称 ...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="url" class="control-label"><span>&nbsp;*&nbsp;</span>地址 URL：</label>
+                        <input type="text" class="form-control" name="url" id="url" placeholder="相对路径 ...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="score" class="control-label">排序 SCORE：</label>
+                        <input type="text" class="form-control" name="score" id="score" placeholder="默认为0，自动排序 ...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="level" class="control-label">级别 LEVEL：</label>
+                        <select class="form-control" name="level" id="level">
+                            <option selected="selected" value="1">一级菜单</option>
+                            <option value="2">二级菜单</option>
+                            <option value="3">三级菜单</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent" class="control-label">父级 PARENT：</label>
+                        <select class="form-control" name="parent" id="parent">
+                            <option selected="selected">0</option>
+                            <option>一级菜单列表</option>
+                        </select>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submit">保存</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        submitJI();
+    });
+
+    function submitJI() {
+        $("#submit").click(function () {
+            var key = $("#indexKey").val();
+            if (null == $("#score").val() || "" == $("#score").val()) {
+                $("#score").val(0.0);
+            }
+            if (null != key && "" != key) {
+                $("#doAdd").submit();
+            }
+        });
+    }
+
+    function doRemove(object) {
+        var score = $(object).attr("id");
+        if (confirm("是确认删除资源？")) {
+            $.post("/MJICtl/delete", {
+                "score": score
+            }, function (data) {
+                if ("200" == data) {
+                    window.location.href = "/MJICtl/show";
+                    // window.location.href = "@{/MJICtl/show}";
+                    // window.location.reload();
+                } else {
+                    alert("删除失败");
+                }
+            });
+        }
+    }
+
+</script>
+
+</body>
+</html>

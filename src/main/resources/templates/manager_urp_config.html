@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+    <!-- JQuery -->
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <!-- Myself Javascript & CSS -->
+    <!--    <link th:href="@{/css/manager_index.css}" rel="stylesheet"/>-->
+
+    <title>用户、角色、权限配置</title>
+</head>
+<body>
+
+<!-- User Table -->
+<div id="" class="col-lg-4">
+    <table id="userTable" class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <td class="col-lg-4">用户编号</td>
+            <td class="col-lg-4">用户名称</td>
+            <td class="col-lg-2">操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="users:${userList}">
+            <td th:text="${users.userId}">userId</td>
+            <td th:text="${users.username}">username</td>
+            <!-- <a href="#">配置|详情</a>-->
+            <td>
+                <a th:href="'javascript:configRole(\''+${users.userId}+'\',\''+${users.username}+'\');'">配置</a> |
+                <a href="#">详情</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Role Table -->
+<div class="col-lg-4">
+    <div id="roleTable" th:fragment="roleTable">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <td class="col-lg-1">
+                    <input type="checkbox" name="cacheAllRoles"/>
+                </td>
+                <td class="col-lg-1">ID</td>
+                <td class="col-lg-2" width="">角色名称</td>
+                <td class="col-lg-2">描述</td>
+                <td class="col-lg-2">配置</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="roles:${roleList}">
+                <td>
+                    <input type="checkbox" th:checked="${roles.configFlag}" th:value="${roles.roleId}" name="roleCheck">
+                </td>
+                <td th:text="${roles.roleId}"></td>
+                <td th:text="${roles.roleName}"></td>
+                <td th:text="${roles.roleDescription}"></td>
+                <td>
+                    <a href="#">配置</a> |
+                    <a href="#">详情</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <input type="button" class="btn btn-info" value="保存 : 角色配置" id="saveRole" onclick="saveRole()">
+</div>
+
+<!-- Permission Table -->
+<div class="col-lg-4">
+    <div id="permissionTable" th:fragment="permissionTable">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <td class="col-lg-3">权限编号</td>
+                <td class="col-lg-4">权限名称</td>
+                <td class="col-lg-4">描述</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="perms:${permList}">
+                <td th:text="${perms.perId}"></td>
+                <td th:text="${perms.perName}"></td>
+                <td th:text="${perms.perDescription}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript">
+    // 全局 用户ID
+    var finalUserId = null;
+
+    // 全选\全不选 cacheAllRoles
+    $("#roleTable").on("click", "input[name='cacheAllRoles']", function () {
+        if ($(this).is(':checked')) {
+            $('input[name="roleCheck"]').each(function () {
+                $(this).prop("checked", true);
+            });
+        } else {
+            $('input[name="roleCheck"]').each(function () {
+                $(this).prop("checked", false);
+            });
+        }
+    });
+
+    //获取角色列表
+    function configRole(userId, username) {
+        finalUserId = userId;
+        // 加载角色
+        $("#roleTable").load("/urpCfgCtrl/getRoleListByUserId", {"userId": userId});
+        $("#saveRole").val("保存:用户(" + username + ")的角色配置");
+        // 加载权限
+        $("#permissionTable").load("/urpCfgCtrl/getPermListByUserId", {"userId": userId});
+        // $("#savePerm").val("保存:用户(" + username + ")的角色配置");
+    }
+
+    //
+    function saveRole() {
+        console.log("button.saveRole");
+        console.log("userId = " + finalUserId);
+
+        if (null == finalUserId) {
+            return;
+        }
+
+        var roles = new Array();
+        var rolesId = new Array();
+
+        roles = $("input[name='roleCheck']:checked");
+        for (i = 0; i < roles.length; i++) {
+            rolesId[i] = $(roles[i]).val();
+        }
+        var params = {"userId": finalUserId, "rolesId": rolesId.toString()};
+        $("#roleTable").load("/urpCfgCtrl/setRole2User", params);
+    }
+
+    // 保存 权限
+
+</script>
+</html>

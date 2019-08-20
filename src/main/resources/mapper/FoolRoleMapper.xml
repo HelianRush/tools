@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fool.mapper.FoolRoleMapper">
+    <resultMap id="BaseResultMap" type="com.fool.entity.FoolRole">
+        <id column="role_id" property="roleId" jdbcType="VARCHAR"/>
+        <result column="role_name" property="roleName" jdbcType="VARCHAR"/>
+        <result column="role_description" property="roleDescription" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    role_id AS roleId,
+    role_name AS roleName,
+    role_description AS roleDescription
+  </sql>
+
+    <!-- 查询全部 -->
+    <select id="queryAllRoles" resultType="com.fool.entity.FoolRole">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        fool_role
+        ORDER BY role_id ASC
+    </select>
+
+    <!-- 根据用户ID查询角色 -->
+    <select id="SelectRoleByUserId" resultType="com.fool.entity.FoolRole" parameterType="java.lang.String">
+        SELECT
+        fr.role_id AS roleId,
+        fr.role_name AS roleName,
+        fr.role_description AS roleDescription
+        FROM
+        fool_role fr
+        LEFT JOIN fool_un_user_role ur ON ur.ur_roleId = fr.role_id
+        WHERE
+        ur.ur_userId = #{userId,jdbcType=VARCHAR}
+        ORDER BY fr.role_id ASC
+    </select>
+
+    <!-- 根据用户ID查询用户没匹配的角色 -->
+    <select id="SelectUserNoneRole" resultType="com.fool.entity.FoolRole" parameterType="java.lang.String">
+        SELECT
+        fr.role_id AS roleId,
+        fr.role_name AS roleName,
+        fr.role_description AS roleDescription
+        FROM
+        fool_role fr
+        WHERE
+        fr.role_id NOT IN
+        <foreach collection="array" item="rolesId" index="index" open="(" separator="," close=")">
+            #{rolesId,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <!-- ========== ========== ========== ========== ========== -->
+    <!-- ========== ========== ========== ========== ========== -->
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from fool_role
+        where role_id = #{roleId,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from fool_role
+    where role_id = #{roleId,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.fool.entity.FoolRole">
+    insert into fool_role (role_id, role_name, role_description
+      )
+    values (#{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, #{roleDescription,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.fool.entity.FoolRole">
+        insert into fool_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">
+                role_id,
+            </if>
+            <if test="roleName != null">
+                role_name,
+            </if>
+            <if test="roleDescription != null">
+                role_description,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">
+                #{roleId,jdbcType=VARCHAR},
+            </if>
+            <if test="roleName != null">
+                #{roleName,jdbcType=VARCHAR},
+            </if>
+            <if test="roleDescription != null">
+                #{roleDescription,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fool.entity.FoolRole">
+        update fool_role
+        <set>
+            <if test="roleName != null">
+                role_name = #{roleName,jdbcType=VARCHAR},
+            </if>
+            <if test="roleDescription != null">
+                role_description = #{roleDescription,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where role_id = #{roleId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fool.entity.FoolRole">
+    update fool_role
+    set role_name = #{roleName,jdbcType=VARCHAR},
+      role_description = #{roleDescription,jdbcType=VARCHAR}
+    where role_id = #{roleId,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

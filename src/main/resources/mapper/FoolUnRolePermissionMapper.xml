@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fool.mapper.FoolUnRolePermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.fool.entity.FoolUnRolePermission" >
+    <id column="rp_id" property="rpId" jdbcType="DECIMAL" />
+    <result column="rp_roleId" property="rpRoleid" jdbcType="VARCHAR" />
+    <result column="rp_permissionId" property="rpPermissionid" jdbcType="VARCHAR" />
+    <result column="rp_description" property="rpDescription" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    rp_id, rp_roleId, rp_permissionId, rp_description
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from fool_un_role_permission
+    where rp_id = #{rpId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from fool_un_role_permission
+    where rp_id = #{rpId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.fool.entity.FoolUnRolePermission" >
+    insert into fool_un_role_permission (rp_id, rp_roleId, rp_permissionId, 
+      rp_description)
+    values (#{rpId,jdbcType=DECIMAL}, #{rpRoleid,jdbcType=VARCHAR}, #{rpPermissionid,jdbcType=VARCHAR}, 
+      #{rpDescription,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fool.entity.FoolUnRolePermission" >
+    insert into fool_un_role_permission
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="rpId != null" >
+        rp_id,
+      </if>
+      <if test="rpRoleid != null" >
+        rp_roleId,
+      </if>
+      <if test="rpPermissionid != null" >
+        rp_permissionId,
+      </if>
+      <if test="rpDescription != null" >
+        rp_description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="rpId != null" >
+        #{rpId,jdbcType=DECIMAL},
+      </if>
+      <if test="rpRoleid != null" >
+        #{rpRoleid,jdbcType=VARCHAR},
+      </if>
+      <if test="rpPermissionid != null" >
+        #{rpPermissionid,jdbcType=VARCHAR},
+      </if>
+      <if test="rpDescription != null" >
+        #{rpDescription,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fool.entity.FoolUnRolePermission" >
+    update fool_un_role_permission
+    <set >
+      <if test="rpRoleid != null" >
+        rp_roleId = #{rpRoleid,jdbcType=VARCHAR},
+      </if>
+      <if test="rpPermissionid != null" >
+        rp_permissionId = #{rpPermissionid,jdbcType=VARCHAR},
+      </if>
+      <if test="rpDescription != null" >
+        rp_description = #{rpDescription,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where rp_id = #{rpId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fool.entity.FoolUnRolePermission" >
+    update fool_un_role_permission
+    set rp_roleId = #{rpRoleid,jdbcType=VARCHAR},
+      rp_permissionId = #{rpPermissionid,jdbcType=VARCHAR},
+      rp_description = #{rpDescription,jdbcType=VARCHAR}
+    where rp_id = #{rpId,jdbcType=DECIMAL}
+  </update>
+</mapper>

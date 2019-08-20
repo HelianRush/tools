@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fool.mapper.FoolPermissionMapper">
+
+    <resultMap id="BaseResultMap" type="com.fool.entity.FoolPermission">
+        <id column="per_id" property="perId" jdbcType="VARCHAR"/>
+        <result column="per_name" property="perName" jdbcType="VARCHAR"/>
+        <result column="per_level" property="perLevel" jdbcType="DECIMAL"/>
+        <result column="per_description" property="perDescription" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    per_id AS perId,
+    per_name AS perName,
+    per_level AS perLevel,
+    per_description AS perDescription
+  </sql>
+    <!-- ========== ========== ========== ========== ========== -->
+
+    <!-- 根据角色ID查询所有权限-->
+    <select id="SelectPermissionByRoleIds" resultType="com.fool.entity.FoolPermission" parameterType="java.lang.String">
+        SELECT
+        per_id AS perId,
+        per_name AS perName,
+        per_level AS perLevel,
+        per_description AS perDescription
+        FROM
+        fool_permission fp
+        LEFT JOIN fool_un_role_permission furp ON furp.rp_permissionId = fp.per_id
+        WHERE
+        furp.rp_roleId IN
+        <foreach collection="array" item="roleIds" index="index" open="(" separator="," close=")">
+            #{roleIds,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <!-- 根据用户查询该用户的所有权限 -->
+    <select id="SelectPermissionByUserId" resultType="com.fool.entity.FoolPermission" parameterType="java.lang.String">
+        SELECT DISTINCT
+            fp.per_id AS perId,
+            fp.per_name AS perName,
+            fp.per_level AS perLevel,
+            fp.per_description AS perDescription
+        FROM
+            fool_permission fp
+        LEFT JOIN fool_un_role_permission unrp ON unrp.rp_permissionId = fp.per_id
+        LEFT JOIN fool_un_user_role unur ON unur.ur_roleId = unrp.rp_roleId
+        WHERE
+	        unur.ur_userId = #{userId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- ========== ========== ========== ========== ========== -->
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from fool_permission
+        where per_id = #{perId,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from fool_permission
+    where per_id = #{perId,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.fool.entity.FoolPermission">
+    insert into fool_permission (per_id, per_name, per_level, 
+      per_description)
+    values (#{perId,jdbcType=VARCHAR}, #{perName,jdbcType=VARCHAR}, #{perLevel,jdbcType=DECIMAL}, 
+      #{perDescription,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.fool.entity.FoolPermission">
+        insert into fool_permission
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="perId != null">
+                per_id,
+            </if>
+            <if test="perName != null">
+                per_name,
+            </if>
+            <if test="perLevel != null">
+                per_level,
+            </if>
+            <if test="perDescription != null">
+                per_description,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="perId != null">
+                #{perId,jdbcType=VARCHAR},
+            </if>
+            <if test="perName != null">
+                #{perName,jdbcType=VARCHAR},
+            </if>
+            <if test="perLevel != null">
+                #{perLevel,jdbcType=DECIMAL},
+            </if>
+            <if test="perDescription != null">
+                #{perDescription,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fool.entity.FoolPermission">
+        update fool_permission
+        <set>
+            <if test="perName != null">
+                per_name = #{perName,jdbcType=VARCHAR},
+            </if>
+            <if test="perLevel != null">
+                per_level = #{perLevel,jdbcType=DECIMAL},
+            </if>
+            <if test="perDescription != null">
+                per_description = #{perDescription,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where per_id = #{perId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fool.entity.FoolPermission">
+    update fool_permission
+    set per_name = #{perName,jdbcType=VARCHAR},
+      per_level = #{perLevel,jdbcType=DECIMAL},
+      per_description = #{perDescription,jdbcType=VARCHAR}
+    where per_id = #{perId,jdbcType=VARCHAR}
+  </update>
+</mapper>

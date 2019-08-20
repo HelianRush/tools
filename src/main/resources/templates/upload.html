@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <!-- JQuery -->
+    <script type="text/javascript" th:src="@{/jquery/jquery-3.3.1.js}"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.js}"></script>
+    <link th:href="@{/bootstrap/css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{/bootstrap/css/bootstrap-theme.css}" rel="stylesheet"/>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <!-- Myself Javascript & CSS -->
+    <script type="text/javascript" th:src="@{/js/upload.js}"></script>
+    <link th:href="@{/css/all.css}" rel="stylesheet"/>
+
+    <title>upload</title>
+</head>
+<body>
+<form th:action="@{/uploadCtl/uploadImage}" class="form-horizontal" method="post" enctype="multipart/form-data">
+
+    <div class="form-group">
+        <label for="images" class="col-sm-2 ">上传LOGO</label>
+        <div class="col-sm-5">
+            <input type="file" id="images" name="images">
+        </div>
+    </div>
+
+    <div class="radio">
+        <label class="radio-inline">
+            <input type="radio" name="toTpye" id="toTpye1" value="txt" checked="true"> 转文本文件 *.txt
+        </label>
+        <label class="radio-inline">
+            <input type="radio" name="toTpye" id="toTpye2" value="doc"> 转Word文件 *.docx
+        </label>
+        <label class="radio-inline">
+            <input type="radio" name="toTpye" id="toTpye3" value="pdf"> 转PDF文件 *.pdf
+        </label>
+    </div>
+
+    <div class="form-group">
+        <input type="text" id="returnMsg" name="returnMsg">
+        <input type="text" id="returnPath" name="returnPath">
+        <input type="text" id="returnName" name="returnName">
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-6">
+            <button class="btn btn-default" type="submit">提交</button>
+        </div>
+        <div class="col-sm-6">
+            <button class="btn btn-default" id="toDown" type="button">下载</button>
+        </div>
+    </div>
+
+</form>
+
+</body>
+
+<script th:inline="javascript">
+    var message = [[${message}]];
+    $("#returnMsg").val(message);
+
+    var filePath = [[${filePath}]];
+    $("#returnPath").val(filePath);
+
+    var fileName = [[${fileName}]];
+    $("#returnName").val(fileName);
+</script>
+
+</html>

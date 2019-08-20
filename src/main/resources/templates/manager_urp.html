@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="x-ua-compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+    <!-- JQuery -->
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+
+    <!-- Myself Javascript & CSS -->
+    <link href="../static/css/all.css" th:href="@{/css/all.css}" rel="stylesheet"/>
+
+    <title>用户 角色 权限</title>
+</head>
+<body>
+
+<div class="row">
+    <div class="col-md-4">
+        <h3>用户</h3>
+        <form action="" th:action="@{/addUser}">
+            账号<input type="text" id="account" name="account"><br>
+            名称<input type="text" id="name" name="name"><br>
+            密码<input type="password" id="password" name="password"><br>
+            <input type="submit" value="提交"><br>
+        </form>
+
+        <table>
+            <tr>
+                <td>账号</td>
+                <td>名称</td>
+            </tr>
+            <tr th:each="data:${fulist}">
+                <td th:text="${data.account}">account</td>
+                <td th:text="${data.name}">name</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <h3>角色</h3>
+        <form action="" th:action="@{/addRole}">
+            名称<input type="text" id="rolename" name="rolename"><br>
+            描述<input type="text" id="role_description" name="description"><br>
+            <input type="submit" value="提交"><br>
+        </form>
+
+        <table>
+            <tr>
+                <td>名称</td>
+                <td>描述</td>
+            </tr>
+            <tr th:each="data2:${frlist}">
+                <td th:text="${data2.rolename}">rolename</td>
+                <td th:text="${data2.description}">name</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <h3>权限</h3>
+        <form action="" th:action="@{/addPermission}">
+            名称<input type="text" id="permissionname" name="permissionname"><br>
+            描述<input type="text" id="perm_description" name="description"><br>
+            <input type="submit" value="提交"><br>
+        </form>
+
+        <table>
+            <tr>
+                <td>名称</td>
+                <td>描述</td>
+            </tr>
+            <tr th:each="data3:${fplist}">
+                <td th:text="${data3.permissionname}">account</td>
+                <td th:text="${data3.description}">name</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+</body>
+</html>

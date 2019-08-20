@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fool.mapper.FoolUnUserRoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.fool.entity.FoolUnUserRole">
+        <id column="ur_id" property="urId" jdbcType="DECIMAL"/>
+        <result column="ur_userId" property="urUserid" jdbcType="VARCHAR"/>
+        <result column="ur_roleId" property="urRoleid" jdbcType="VARCHAR"/>
+        <result column="ur_description" property="urDescription" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    ur_id AS urId,
+    ur_userId AS urUserid,
+    ur_roleId AS urRoleid,
+    ur_description  AS urDescription
+  </sql>
+
+    <!-- 根据用户，查询用户下的用户角色 -->
+    <select id="SelectUnUserRoleByUserAll" resultType="com.fool.entity.FoolUnUserRole" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        fool_un_user_role
+        WHERE
+        ur_userId = #{userId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据用户ID，删除所有角色配置 -->
+    <insert id="InsertFoolUnUserRole" parameterType="com.fool.entity.FoolUnUserRole">
+        insert into fool_un_user_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="urId != null">
+                ur_id,
+            </if>
+            <if test="urUserid != null">
+                ur_userId,
+            </if>
+            <if test="urRoleid != null">
+                ur_roleId,
+            </if>
+            <if test="urDescription != null">
+                ur_description,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="urId != null">
+                #{urId,jdbcType=DECIMAL},
+            </if>
+            <if test="urUserid != null">
+                #{urUserid,jdbcType=VARCHAR},
+            </if>
+            <if test="urRoleid != null">
+                #{urRoleid,jdbcType=VARCHAR},
+            </if>
+            <if test="urDescription != null">
+                #{urDescription,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 根据用户ID，删除所有角色配置 -->
+    <delete id="DeleteRolesByUser" parameterType="java.lang.String">
+        DELETE FROM fool_un_user_role WHERE ur_userId = #{userId,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 根据RoleId数组，批量删除参数之外的数据 -->
+    <delete id="DeleteOldRoleConfig" parameterType="java.util.List">
+        DELETE FROM fool_un_user_role
+        WHERE
+        ur_id IN
+        <foreach collection="list" item="delUnIds" index="index" open="(" separator="," close=")">
+            #{delUnIds,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+
+</mapper>
